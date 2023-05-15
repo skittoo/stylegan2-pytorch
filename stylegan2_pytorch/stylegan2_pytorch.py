@@ -43,6 +43,7 @@ except:
     APEX_AVAILABLE = False
 
 import aim
+import shutil
 
 assert torch.cuda.is_available(), 'You need to have an Nvidia GPU with CUDA installed.'
 
@@ -1180,6 +1181,9 @@ class Trainer():
         generated_images = self.generate_truncated(self.GAN.S, self.GAN.G, latents, n, trunc_psi = self.trunc_psi)
         torchvision.utils.save_image(generated_images, str(self.results_dir / self.name / f'{str(num)}.{ext}'), nrow=num_rows)
         
+        # Adding uploading to the Gdrive after evluating.
+        shutil.copy(str(self.results_dir / self.name / f'{str(num)}.{ext}'), os.path.join('/content/drive/MyDrive/Dr.AbdelFattah/StyleGAN2', f'{str(num)}.{ext}'))
+
         # moving averages
 
         generated_images = self.generate_truncated(self.GAN.SE, self.GAN.GE, latents, n, trunc_psi = self.trunc_psi)
@@ -1367,6 +1371,10 @@ class Trainer():
 
         torch.save(save_data, self.model_name(num))
         self.write_config()
+
+        # Added part to just upload to drive.
+        shutil.copy(self.model_name(num), os.path.join('/content/drive/MyDrive/Dr.AbdelFattah/StyleGAN2', f'model_{num}.pt'))
+        
 
     def load(self, num = -1):
         self.load_config()
